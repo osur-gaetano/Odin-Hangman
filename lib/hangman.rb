@@ -1,11 +1,35 @@
 # frozen_string_literal:false
 
-def secret_word(word_file)
-  word_list = []
-  File.foreach(word_file) do |line|
-    word_list.append(line.chomp) if line.chomp.length > 5 && line.chomp.length < 13
+class Player
+  attr_accessor :name
+
+  def initialize(name)
+    @name = name
   end
-  word_list.sample
 end
 
-puts "-*-*-*-*-*-*-*-*-*-*- Let's Hang the Man -*-*-*-*-*-*-*-*-*-*-*-*-"
+class ComputerPlayer < Player
+  attr_accessor :secret
+
+  def initialize(name = 'Javis')
+    super(name)
+  end
+
+  def secret_word(secret)
+    @secret = secret
+  end
+end
+
+class HumanPlayer < Player
+  attr_accessor :guess, :wins
+
+  def initialize(name)
+    super(name)
+    @wins = 0
+  end
+
+  def make_guess
+    puts 'Make a guess, one characer at a time'
+    @guess = gets[0]
+  end
+end
