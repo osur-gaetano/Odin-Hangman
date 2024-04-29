@@ -79,6 +79,22 @@ class HangManGame
     puts "The current guess state is : #{@guess_attempt.join(' ')} \n"
   end
 
+  def save_game_progress
+    game_data = JSON.dump(
+      [
+        @computer_player.secret,
+        @human_player.name,
+        @current_iteration,
+        @guess_attempt
+      ]
+    )
+    Dir.mkdir('saved_games') unless Dir.exist?('saved_games')
+    game_filename = "saved_games/#{@human_player.name}_#{Time.now.strftime('%M')}_gamefile.txt"
+    File.open(game_filename, 'w') do |file|
+      file.write game_data
+    end
+  end
+
   def start_menu
     start_menu_options = [
       ' 1: Continue with saved Hangman Game ?',
@@ -111,6 +127,17 @@ class HangManGame
     if choice.eql? 1
       save_game_progress
     end
+  end
+
+  def self.load_saved_game(file_name = 'Gaetano56_39_gamefile.txt')
+    saved_game = []
+    File.open("saved_games/#{file_name}", 'r').each do |data|
+      saved_game << JSON.load(data)
+    end
+    comp_player = ComputerPlayer.new()
+    hum_player = HumanPlayer.new(saved_game[0][1])
+    g = self.new(comp_player, hum_player, saved_game[0][2])
+    g.resume_play(saved_game)
   end
 
   def game_play(saved_data = nil)
